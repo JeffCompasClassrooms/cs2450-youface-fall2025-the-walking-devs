@@ -1,0 +1,39 @@
+App idea: Reddit for College Students
+Name: ?
+
+* Business Context
+    * Mainstream platforms like Reddit host conversations on a wide variety of topics. This makes Reddit a good app for your average person, it also creates clutter and can make it difficult for students to find content that is relevant to them.
+
+
+* Problem Statement
+    * It is difficult to navigate such a large app with many users being from ages 12-80, with each generation bringing different topics, problems and issues. If we are able to take a sliver of all those different people, college students, it would make a much more useful app that college students can utilize. 
+    * There are two problems this software will focus on 1) reduction of users 2) more appealing app to college students with resources for their issues and problems 
+    * The solution will address these problems by making an app targeted toward college students. It will also contain topics and resources that appeal to college students.
+
+
+* Scope
+    * The solution will be available on a web browser.
+    * In Scope: make sure the website it able to view on pc and mobile
+    * Out of Scope: Making an app version for the website. Following different users. Following a specific forum (sub-reddit)
+
+
+* Assumptions
+    * Username and password will distinguish a user
+    * User needs keyboard and mouse to navigate website
+    * Users will be 18-25 years old and enrolled in college
+
+
+* Features (Functional Requirements)
+    * User login, creating an account
+    * Banner at top of screen with logo, clicking on logo will return you to main page
+    * One main page, can click on posts to comment
+    * Ability to make a post
+    * Up-vote and down-vote posts
+    * Comments (with up-voting and down-voting)
+    * Ability to delete their own post and comment(s)
+    * User can post text and or images
+
+
+* Non-functional Requirement
+    * The system will be available 24x7x365
+    * The system will run PC’s with modern browsers
