@@ -1,5 +1,5 @@
 App idea: Reddit for College Students
-Name: ?
+Name: The Walking Devs
 
 * Business Context
     * Mainstream platforms like Reddit host conversations on a wide variety of topics. This makes Reddit a good app for your average person, it also creates clutter and can make it difficult for students to find content that is relevant to them.
