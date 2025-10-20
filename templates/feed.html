@@ -31,35 +31,4 @@
     </div>
     {% endfor %}
   </div>
-
-  <div class="col col-lg-3">
-    <div class="card bg-light mb-3">
-      <div class="card-body">
-        <h3 class="card-title">Add Friend</h3>
-        <form method="post" action="/addfriend">
-          <div class="form-group mb-1">
-            <input type="text" class="form-control" name="name" placeholder="username" />
-          </div>
-          <button type="submit" class="form-control btn btn-primary" name="addfriend">Submit</button>
-        </form>
-      </div>
-    </div>
-
-    <div class="card bg-light">
-      <div class="card-body">
-        <h3 class="card-title">My Friends</h3>
-        {% if friends %}
-          <ul>
-            {% for friend in friends %}
-              <li><a href="/friend/{{ friend.username }}">{{ friend.username }}</a></li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p class="card-text">
-            Sorry, no friends!
-          </p>
-        {% endif %}
-      </div>
-    </div>
-  </div>
 {% endblock %}
