@@ -1,29 +1,22 @@
 {% extends "base.html" %}
-
 {% block content %}
-<div class="row">
-  <div class="col-sm-6 mx-auto">
-    <div class="card card-body bg-light">
-      <h3 class="card-title">Login</h3>
-      <form method="post" action="/login">
-        <fieldset>
-          <hr />
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" class="form-control" name="username">
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" name="password">
-          </div>
-          <div class="form-group">
-            <input class="btn btn-primary" type="submit" name="type" value="Login">
-            <input class="btn btn-success" type="submit" name="type" value="Create">
-            
-          </div>
-        </fieldset>
-      </form>
-    </div>
+<main class="auth-shell">
+  <div class="auth-card">
+    <h2>Login</h2>
+    <p class="text-muted">Welcome back! Sign in to continue.</p>
+
+    <form method="post" action="/login">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" class="form-control mb-3" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" class="form-control mb-4" required>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-brand">Login</button>
+        <a href="/create" class="btn btn-outline-brand">Create</a>
+      </div>
+    </form>
   </div>
-</div>
+</main>
 {% endblock %}

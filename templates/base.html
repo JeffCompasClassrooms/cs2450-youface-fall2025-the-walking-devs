@@ -10,7 +10,7 @@
     </head>
 
     <body>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
         <div class="container">
           <a class="navbar-brand" href="/">CampusTalk</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,13 +34,19 @@
         </div>
       </nav>
 
-      <div class="jumbotron">
-        <div class="container">
-          <h1><a href="/">CampusTalk</a></h1>
-          <p class="lead">{{subtitle}}</p>
+
+      {% block hero %}
+      <div class="hero">
+        <div class="container text-center py-5">
+          <h1 class="site-title"><a href="/">CampusTalk</a></h1>
+          {# optional subtitle:
+          <p class="lead mb-0">{{ subtitle }}</p>
+          #}
         </div>
       </div>
+      {% endblock %}
 
+      
     <div class="container">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
