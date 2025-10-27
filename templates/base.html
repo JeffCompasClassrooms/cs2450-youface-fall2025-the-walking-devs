@@ -37,29 +37,26 @@
       <div class="jumbotron">
         <div class="container">
           <h1><a href="/">CampusTalk</a></h1>
-<<<<<<< Updated upstream
-=======
           <p class="lead">{{subtitle}}</p>
->>>>>>> Stashed changes
         </div>
       </div>
 
-      <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-            <div class="alert alert-dismissible alert-{{ category }} fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+    <div class="container">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+          <div class="alert alert-dismissible alert-{{ category }} fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert">
+                <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
 
-        {% block content %}
-        {% endblock %}
-      </div>
-    </body>
+      {% block content %}{% endblock %}
+    </div>
+  </body>
 </html>
+
