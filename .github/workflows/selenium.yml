@@ -12,12 +12,6 @@ jobs:
   selenium:
     runs-on: ubuntu-latest
 
-    services:
-      selenium:
-        image: selenium/standalone-chrome:latest
-        ports:
-          - 4444:4444
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -27,7 +21,13 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      # install Chrome + chromedriver on the runner
+      - name: Install system dependencies (Chrome + driver)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
@@ -40,7 +40,10 @@ jobs:
 
       - name: Run Selenium tests
         env:
-          SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
+          CHROME_BIN: /usr/bin/chromium-browser
+          CHROMEDRIVER_PATH: /usr/bin/chromedriver
         run: |
+          echo "== Beginning Tests =="
           python bailey_tests.py
+          echo "== Ending Tests =="
 
