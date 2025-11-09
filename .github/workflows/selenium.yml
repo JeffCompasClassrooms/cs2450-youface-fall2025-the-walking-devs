@@ -2,42 +2,51 @@ name: Run Selenium Tests
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
+
 jobs:
   selenium:
     runs-on: ubuntu-latest
 
-    services:
-      selenium:
-        image: selenium/standalone-chrome:latest
-        ports:
-          - 4444:4444
-
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
-      - name: Install dependencies
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Set up Chromedriver
+        uses: nanasess/setup-chromedriver@v2
+
+      - name: Install Python deps
         run: |
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install selenium
 
-      - name: Start Flask app in background
+      # start YOUR app
+      - name: Start app in background
         run: |
-          nohup python youface.py > flask.log 2>&1 &
+          nohup python app.py > app.log 2>&1 &
           sleep 5
+          echo "=== app.log ==="
+          cat app.log || true
+
+      # make sure it's actually running on 5000
+      - name: Probe app
+        run: |
+          curl --fail http://127.0.0.1:5000 || (echo "App not running on 5000" && exit 1)
 
       - name: Run Selenium tests
-        env:
-          SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
         run: |
-          python selenium_example.py
+          echo "== Beginning Tests =="
+          python bailey_tests.py
+          echo "== Ending Tests =="
+
