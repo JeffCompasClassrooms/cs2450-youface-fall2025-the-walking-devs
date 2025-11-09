@@ -48,5 +48,6 @@ jobs:
         run: |
           echo "== Beginning Tests =="
           python bailey_tests.py
+          python jamie_selenium.py
           echo "== Ending Tests =="
 
