@@ -103,7 +103,6 @@ try:
     else:
         print("[SKIPPED] - Cannot test form submit (missing button or username input).")
 
-
 except Exception as e:
     print("Error:", e)
 
