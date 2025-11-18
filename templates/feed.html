@@ -1,34 +1,167 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-md-center mb-4">
-  <h1 class="">Welcome, {{username}}!</h1>
-</div>
-
-<div class="row justify-content-md-center">
-
-  <div class="col col-lg-8">
-    <div class="card bg-light mb-3">
-      <div class="card-body">
-        <h3 class="card-title">New post</h3>
-        <form method="post" action="/post">
-          <div class="form-group">
-            <textarea class="form-control" name="post" rows="3" placeholder="What's on your mind?"></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary" name="post-submit">Submit</button>
-        </form>
-      </div>
-    </div>
-
-    <h2 class="">My Feed</h2>
-    {% for post in posts %}
-    <div class="card bg-light">
-      <div class="card-body">
-        <h4 class="card-title">{{ post.user }}</h4>
-        <h6 class="card-subtitle mb-2 text-muted">{{ post.time|convert_time }}</h6>
-        <p class="card-text">{{ post.text }}</p>
-      </div>
-    </div>
-    {% endfor %}
+<div class="feed-container">
+  <div class="row justify-content-md-center mb-4">
+    <h1 class="">Welcome, {{ first_name or username }}!</h1>
   </div>
+
+  <div class="row justify-content-md-center">
+    <div class="col col-lg-8">
+      <!-- new post card -->
+      <div class="card bg-light mb-3">
+        <div class="card-body">
+          <h3 class="card-title">New post</h3>
+          <form method="post" action="{{ url_for('post') }}">
+            <div class="form-group">
+              <textarea class="form-control" name="post" rows="3" placeholder="What's on your mind?"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" name="post-submit">Submit</button>
+          </form>
+        </div>
+      </div>
+
+      <h2 class="">My Feed</h2>
+
+      {% for post in posts %}
+        {% set post_index = loop.index0 %}
+        {% set post_vote = get_post_user_vote(post, username) %}
+        <div class="card bg-light mb-3">
+          <div class="card-body">
+            <div class="d-flex">
+              <!-- vote column for post -->
+              <div class="vote-column text-center mr-2">
+                <form method="post"
+                      action="{{ url_for('vote_post', post_index=post_index) }}"
+                      class="vote-form">
+                  <input type="hidden" name="vote" value="up">
+                  <button type="submit"
+                          class="vote-button {% if post_vote == 1 %}active{% endif %}"
+                          data-vote="up"
+                          title="Upvote">
+                    ▲
+                  </button>
+                </form>
+
+                {% set score = get_post_score(post) %}
+                <div class="vote-score
+                            {% if score > 0 %}positive
+                            {% elif score < 0 %}negative
+                            {% else %}neutral{% endif %}">
+                  {{ score }}
+                </div>
+
+                <form method="post"
+                      action="{{ url_for('vote_post', post_index=post_index) }}"
+                      class="vote-form">
+                  <input type="hidden" name="vote" value="down">
+                  <button type="submit"
+                          class="vote-button {% if post_vote == -1 %}active{% endif %}"
+                          data-vote="down"
+                          title="Downvote">
+                    ▼
+                  </button>
+                </form>
+              </div>
+
+              <!-- post content -->
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h4 class="card-title mb-0">{{ post.user }}</h4>
+                    <!-- added spacing so the date isn't kissing the username -->
+                    <h6 class="card-subtitle text-muted"
+                        style="margin-top: 2px; margin-bottom: 8px; font-size: 0.9rem;">
+                      {{ post.time|convert_time }}
+                    </h6>
+                  </div>
+
+                  {% if post.user == username %}
+                  <form method="post" action="{{ url_for('delete_post', post_index=post_index) }}">
+                    <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                  </form>
+                  {% endif %}
+                </div>
+
+                <p class="card-text mb-0">{{ post.text }}</p>
+              </div>
+            </div>
+          </div>
+
+          {% if post.comments %}
+          <ul class="list-group list-group-flush">
+            {% for c in post.comments %}
+            {% set comment_index = loop.index0 %}
+            {% set comment_vote = get_comment_user_vote(c, username) %}
+            <li class="list-group-item d-flex align-items-start">
+              <!-- vote column for comment -->
+              <div class="vote-column text-center mr-2">
+                <form method="post"
+                      action="{{ url_for('vote_comment', post_index=post_index, comment_index=comment_index) }}"
+                      class="vote-form">
+                  <input type="hidden" name="vote" value="up">
+                  <button type="submit"
+                          class="vote-button vote-button-sm {% if comment_vote == 1 %}active{% endif %}"
+                          data-vote="up"
+                          title="Upvote">
+                    ▲
+                  </button>
+                </form>
+
+                {% set cscore = get_comment_score(c) %}
+                <div class="vote-score vote-score-sm
+                            {% if cscore > 0 %}positive
+                            {% elif cscore < 0 %}negative
+                            {% else %}neutral{% endif %}">
+                  {{ cscore }}
+                </div>
+
+                <form method="post"
+                      action="{{ url_for('vote_comment', post_index=post_index, comment_index=comment_index) }}"
+                      class="vote-form">
+                  <input type="hidden" name="vote" value="down">
+                  <button type="submit"
+                          class="vote-button vote-button-sm {% if comment_vote == -1 %}active{% endif %}"
+                          data-vote="down"
+                          title="Downvote">
+                    ▼
+                  </button>
+                </form>
+              </div>
+
+              <!-- comment content -->
+              <div class="flex-grow-1 d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>{{ c.user }}</strong>
+                  <span class="text-muted" style="font-size: 0.8rem; margin-left: 4px;">
+                    {{ c.time|convert_time }}
+                  </span>
+                  <div>{{ c.text }}</div>
+                </div>
+
+                {% if c.user == username %}
+                <form method="post" action="{{ url_for('delete_comment', post_index=post_index, comment_index=comment_index) }}">
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                </form>
+                {% endif %}
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+
+          <div class="card-body">
+            <form method="POST" action="{{ url_for('comment') }}">
+              <input type="hidden" name="post_index" value="{{ post_index }}">
+              <div class="form-group mb-2">
+                <input class="form-control" type="text" name="comment_text" placeholder="Write a comment..." required>
+              </div>
+              <button class="btn btn-sm btn-secondary" type="submit">Comment</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

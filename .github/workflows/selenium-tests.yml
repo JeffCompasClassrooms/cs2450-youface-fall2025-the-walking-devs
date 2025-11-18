@@ -1,4 +1,4 @@
-name: Run Selenium tests
+name: selenium
 
 on:
   push:
@@ -7,11 +7,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  selenium-tests:
+  run-selenium-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -19,20 +19,26 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium-browser chromium-chromedriver
-
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install selenium pytest; fi
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            pip install flask selenium
+          fi
 
-      - name: Run Selenium test suite
-        env:
-          CHROME_BIN: /usr/bin/chromium-browser
-          CHROMEDRIVER_PATH: /usr/lib/chromium-browser/chromedriver
+      # 👇 start your app first
+      - name: Start Flask app in background
         run: |
-          pytest -v
+          # change app.py to your actual entry point if it's different
+          python app.py &
+          # give the server time to start
+          sleep 5
+
+      - name: Run Selenium tests
+        run: |
+          echo "== Beginning Tests =="
+          python bailey_tests.py
+          echo "== Ending Tests =="
 

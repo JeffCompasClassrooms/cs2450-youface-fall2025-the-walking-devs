@@ -44,14 +44,13 @@ body {
 
 /* Center the login card */
 .auth-shell {
-  min-height: calc(100vh - 100px); /* increase offset for less empty space */
+  min-height: calc(100vh - 100px);
   display: flex;
-  align-items: flex-start; /* move card higher up */
+  align-items: flex-start;
   justify-content: center;
-  padding-top: 80px; /* controls how far down from the navbar */
+  padding-top: 80px;
   padding-bottom: 40px;
 }
-
 
 /* Card styling */
 .auth-card {
@@ -73,19 +72,20 @@ body {
   margin-bottom: 18px;
 }
 
-/* Inputs a touch taller for comfort */
+/* Input height + rounding */
 .auth-card .form-control {
-  height: 46px;
+  height: 48px;
+  border-radius: 8px;
 }
 
-/* Button spacing (Bootstrap 4 doesn't have gap) */
+/* Button spacing */
 .auth-card .btn + .btn {
   margin-left: 10px;
 }
 
 /* === Brand buttons === */
 .btn-brand {
-  background-color: #D00000; /* Utah Tech red */
+  background-color: #D00000;
   color: #fff;
   border: none;
 }
@@ -104,35 +104,34 @@ body {
   color: #fff;
 }
 
-
-/* --- Hero (big centered title) --- */
+/* --- Hero Section --- */
 .hero {
-  background: #f2f4f6;           /* soft gray like the mockup */
+  background: #f2f4f6;
   border-bottom: 1px solid #e6e8eb;
 }
 
 .site-title {
-  font-size: 56px;               /* big */
+  font-size: 56px;
   font-weight: 700;
   line-height: 1.1;
   margin: 0;
 }
 .site-title a {
   text-decoration: none;
-  color: #2b78c2;                /* brandy blue for title */
+  color: #2b78c2;
 }
 
-/* --- Place card just below hero, not too low --- */
+/* Adjust layout for hero + card */
 .auth-shell {
-  min-height: calc(100vh - 260px); /* account for navbar+hero height */
+  min-height: calc(100vh - 260px);
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 24px;              /* gap under hero */
+  padding-top: 24px;
   padding-bottom: 48px;
 }
 
-/* --- Make buttons chunkier like the mockup --- */
+/* Chunkier buttons */
 .btn-brand,
 .btn-outline-brand {
   border-radius: 8px;
@@ -140,8 +139,48 @@ body {
   font-weight: 600;
 }
 
-/* Slightly round inputs to match the card feel */
-.auth-card .form-control {
-  height: 48px;
-  border-radius: 8px;
+/* === Ultra-Compact Voting UI === */
+
+.vote-column {
+  width: 20px;                     /* even slimmer */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4px;
+  margin-right: 10px;              /* space between arrows and text */
+  user-select: none;
+}
+
+.vote-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.75rem;               /* smaller arrows */
+  line-height: 1;
+  color: #b5b5b5;                   /* soft light gray */
+  transition: color 0.15s ease;
+}
+
+.vote-button-sm {
+  font-size: 0.7rem;
+}
+
+.vote-button:hover {
+  color: #8a8a8a;
+}
+
+.vote-button.active {
+  color: #ff7b32;                   /* soft orange */
+}
+
+.vote-score {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin: 4px 0;
+  color: #555;
+}
+
+.vote-score-sm {
+  font-size: 0.65rem;
 }

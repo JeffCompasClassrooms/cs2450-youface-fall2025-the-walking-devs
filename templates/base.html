@@ -5,6 +5,7 @@
       <title>CampusTalk</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}" type="text/css">
       <link rel="stylesheet" href="{{ url_for('static', filename='youface.css') }}" type="text/css">
+
       <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     </head>
@@ -47,22 +48,73 @@
       {% endblock %}
 
       
-    <div class="container">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-          <div class="alert alert-dismissible alert-{{ category }} fade show" role="alert">
-              {{ message }}
-              <button type="button" class="close" data-dismiss="alert">
-                <span aria-hidden="true">&times;</span>
-              </button>
-          </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+      <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-dismissible alert-{{ category }} fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
-      {% block content %}{% endblock %}
-    </div>
-  </body>
+        {% block content %}{% endblock %}
+      </div>
+
+      <!-- AJAX voting script: keeps you in place instead of jumping to top -->
+      <script>
+      function attachVoteListeners() {
+        const forms = document.querySelectorAll("form.vote-form");
+        forms.forEach(form => {
+          // prevent double-binding after DOM replacement
+          if (form.dataset.bound === "true") return;
+          form.dataset.bound = "true";
+
+          form.addEventListener("submit", async (e) => {
+            e.preventDefault(); // no full-page reload
+
+            const formData = new FormData(form);
+            const url = form.action;
+
+            try {
+              const response = await fetch(url, {
+                method: "POST",
+                body: formData
+              });
+
+              if (!response.ok) {
+                // if something goes weird, just fall back to normal reload
+                window.location.reload();
+                return;
+              }
+
+              const html = await response.text();
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(html, "text/html");
+
+              const newFeed = doc.querySelector(".feed-container");
+              const oldFeed = document.querySelector(".feed-container");
+
+              if (newFeed && oldFeed) {
+                oldFeed.innerHTML = newFeed.innerHTML;
+                // reattach listeners to the new forms
+                attachVoteListeners();
+              } else {
+                window.location.reload();
+              }
+            } catch (err) {
+              console.error(err);
+              window.location.reload();
+            }
+          });
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", attachVoteListeners);
+      </script>
+    </body>
 </html>
-
