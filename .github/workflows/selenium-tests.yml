@@ -39,6 +39,6 @@ jobs:
       - name: Run Selenium tests
         run: |
           echo "== Beginning Tests =="
-          python bailey_tests.py
+          python3 Kai_unittests.py
           echo "== Ending Tests =="
 
