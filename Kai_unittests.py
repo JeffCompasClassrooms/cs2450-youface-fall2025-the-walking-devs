@@ -13,7 +13,7 @@ VALID_USERNAME = "Kpond2"
 VALID_PASSWORD = "Dodgers1"
 INVALID_USERNAME = "invaliduser"
 INVALID_PASSWORD = "invalidpassword"
-TIMEOUT = 10 
+TIMEOUT = 15
 YOUR_NAME = "Kai Pond" 
 # ---------------------
 
