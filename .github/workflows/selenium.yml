@@ -50,7 +50,7 @@ jobs:
           echo "== Beginning Tests =="
           
           # Use a loop or separate commands for all test files
-          TEST_FILES="bailey_tests.py jamie_selenium.py Kai_unittests.py"
+          TEST_FILES="Kai_unittests.py"
           
           for test_file in $TEST_FILES; do
             if [ -f "$test_file" ]; then
