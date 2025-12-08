@@ -7,9 +7,10 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import time 
 
 # --- CONFIGURATION ---
-YOUFACE_LOGIN_URL = "http://127.0.0.1:5005/" 
+# CRITICAL FIX: Changed from 127.0.0.1 (localhost) to 'app' (the service name in GitHub Actions)
+YOUFACE_LOGIN_URL = "http://app:5005/" 
 VALID_USERNAME = "Kpond2" 
-VALID_PASSWORD = "...."
+VALID_PASSWORD = "Dodgers1"
 INVALID_USERNAME = "invaliduser"
 INVALID_PASSWORD = "invalidpassword"
 TIMEOUT = 10 
@@ -24,13 +25,24 @@ class YoufaceLoginPageTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.driver = webdriver.Chrome() 
+        print(f"Beginning Tests - {YOUR_NAME}")
+        
+        # --- CRITICAL FIX: Add Chrome Options for Headless/CI Environment ---
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')          # Run Chrome without a visible GUI
+        options.add_argument('--no-sandbox')         # Required in containerized/CI environments
+        options.add_argument('--disable-dev-shm-usage') # Prevents crashing in Linux CI environments
+        options.add_argument('--window-size=1920,1080') # Set a fixed window size
+        
+        cls.driver = webdriver.Chrome(options=options) 
+        # --- END CRITICAL FIX ---
+        
         cls.driver.implicitly_wait(TIMEOUT) 
-        # Print the starting banner
-        print(f"Beginning Tests - {YOUR_NAME}") 
     
     def setUp(self):
+        # Reload the login page before every test, using the new 'http://app:5005/' URL
         self.driver.get(YOUFACE_LOGIN_URL)
+        # Assert the correct page title
         self.assertIn("CampusTalk", self.driver.title)
     
     def tearDown(self):
@@ -38,7 +50,7 @@ class YoufaceLoginPageTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # Calculate and print the final summary (this uses the class variables updated in _report_result)
+        # Calculate and print the final summary
         print("\nEnding Tests:")
         print(f"{cls.ran_tests} Tests Ran: {cls.passed_tests} Tests Passed")
         cls.driver.quit()
@@ -49,10 +61,10 @@ class YoufaceLoginPageTests(unittest.TestCase):
         if not success:
             output += f" ({message})"
         
-        # 1. Print the result immediately to stdout
+        # Print the result immediately to stdout
         print(output)
         
-        # 2. Update the class counters for the final summary
+        # Update the class counters for the final summary
         YoufaceLoginPageTests.ran_tests += 1
         if success:
             YoufaceLoginPageTests.passed_tests += 1
@@ -187,6 +199,5 @@ class YoufaceLoginPageTests(unittest.TestCase):
 
 
 if __name__ == '__main__': 
-    # Set the verbosity to 0 to minimize the default unittest output (it will still print the OK/FAIL line)
-    # Removing buffer=True allows the individual prints to show up immediately.
+    # Use verbosity=0 to minimize the default unittest output
     unittest.main(exit=False, verbosity=0)
