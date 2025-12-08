@@ -1,0 +1,66 @@
+name: Automated Selenium UI Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-selenium-tests:
+    runs-on: ubuntu-latest
+
+    # Define the service for the Flask application
+    services:
+      app:
+        image: python:3.11-slim
+        ports:
+          - 5005:5005
+        options: >-
+          --name flask-app
+        # Command to install dependencies and start the Flask server
+        entrypoint: /bin/sh -c
+        command: |
+          pip install -r requirements.txt
+          # Start Flask app on 0.0.0.0:5005 in the background
+          python app.py & 
+          sleep 5 # Give the server time to start up
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install Dependencies & Setup Browser
+      run: |
+        pip install -r requirements.txt
+        pip install selenium
+        # Install the Chrome browser and driver
+        sudo apt-get update && sudo apt-get install -y chromium-chromedriver chromium-browser
+        echo "PATH=$PATH:/usr/lib/chromium-browser" >> $GITHUB_ENV
+        
+    - name: Run Flask App Health Check (Port 5005)
+      # Check that the Flask app is running before starting Selenium
+      run: |
+        curl --fail http://127.0.0.1:5005 || (echo "App not running on 5005" && exit 1)
+
+    - name: Run ALL Team Selenium Tests
+      run: |
+        # Find all test files and run them
+        TEST_FILES=$(ls *_unittests.py)
+        echo "Found the following test files: $TEST_FILES"
+        
+        for test_file in $TEST_FILES; do
+          echo "--- Running $test_file ---"
+          # Run the tests
+          python3 $test_file
+          
+          # Fail the job if any test file returns a non-zero exit code (failure)
+          if [ $? -ne 0 ]; then
+            echo "::error file=$test_file::Selenium tests failed in $test_file."
+            exit 1 
+          fi
+        done
