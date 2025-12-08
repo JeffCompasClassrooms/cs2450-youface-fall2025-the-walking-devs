@@ -42,7 +42,7 @@ jobs:
       # make sure it's actually running on 5000
       - name: Probe app
         run: |
-          curl --fail http://127.0.0.1:5000 || (echo "App not running on 5000" && exit 1)
+          curl --fail http://127.0.0.1:5005 || (echo "App not running on 5000" && exit 1)
 
       - name: Run Selenium tests
         run: |
