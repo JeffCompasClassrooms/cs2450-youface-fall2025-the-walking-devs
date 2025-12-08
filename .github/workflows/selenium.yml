@@ -1,4 +1,4 @@
-name: Run Selenium Tests
+name: Automated Selenium UI Tests
 
 on:
   push:
@@ -7,48 +7,63 @@ on:
     branches: [ "main" ]
 
 jobs:
-  selenium:
+  run-selenium-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
-      - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
-
-      - name: Set up Chromedriver
-        uses: nanasess/setup-chromedriver@v2
-
-      - name: Install Python deps
+      # Use the built-in system tools rather than separate actions for simplicity and reliability
+      - name: Install Dependencies & Setup Browser
         run: |
+          # Install Python requirements
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install selenium
-
-      # start YOUR app
-      - name: Start app in background
+          
+          # Install Chromedriver and Chrome browser for Selenium
+          sudo apt-get update && sudo apt-get install -y chromium-chromedriver chromium-browser
+          # Set the path variable so Selenium can find the driver
+          echo "PATH=$PATH:/usr/lib/chromium-browser" >> $GITHUB_ENV
+          
+      # CRITICAL FIX: Start app in background using 0.0.0.0 host
+      - name: Start Flask Application (Background)
         run: |
-          nohup python app.py > app.log 2>&1 &
-          sleep 5
-          echo "=== app.log ==="
-          cat app.log || true
-
-      # make sure it's actually running on 5000
-      - name: Probe app
+          # Use '&' to run the app in the background. --host 0.0.0.0 is vital for CI.
+          python app.py --host 0.0.0.0 &
+          sleep 7 # Increased wait time slightly for reliability
+          
+      # CRITICAL FIX: Make sure the port check and error message are consistent
+      - name: Run Flask App Health Check (Port 5005)
         run: |
-          curl --fail http://127.0.0.1:5005 || (echo "App not running on 5000" && exit 1)
+          # Check the correct port (5005) and show the correct error message if it fails
+          curl --fail http://127.0.0.1:5005 || (echo "App not running on 5005" && exit 1)
 
-      - name: Run Selenium tests
+      - name: Run ALL Team Selenium Tests
         run: |
           echo "== Beginning Tests =="
-          python bailey_tests.py
-          python jamie_selenium.py
-          python Kai_unittests.py
+          
+          # Use a loop or separate commands for all test files
+          TEST_FILES="bailey_tests.py jamie_selenium.py Kai_unittests.py"
+          
+          for test_file in $TEST_FILES; do
+            if [ -f "$test_file" ]; then
+              echo "--- Running $test_file ---"
+              python3 $test_file
+              
+              if [ $? -ne 0 ]; then
+                echo "::error file=$test_file::Selenium tests failed in $test_file."
+                exit 1 
+              fi
+            else
+              echo "--- Skipping $test_file (Not Found) ---"
+            fi
+          done
+          
           echo "== Ending Tests =="
-
