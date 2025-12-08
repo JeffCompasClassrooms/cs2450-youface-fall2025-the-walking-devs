@@ -8,7 +8,7 @@ import time
 
 # --- CONFIGURATION ---
 # CRITICAL FIX: Changed from 127.0.0.1 (localhost) to 'app' (the service name in GitHub Actions)
-YOUFACE_LOGIN_URL = "http://app:5005/" 
+YOUFACE_LOGIN_URL = "http://127.0.0.1:5005/"
 VALID_USERNAME = "Kpond2" 
 VALID_PASSWORD = "Dodgers1"
 INVALID_USERNAME = "invaliduser"
