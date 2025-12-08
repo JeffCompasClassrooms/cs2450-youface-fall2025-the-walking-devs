@@ -7,19 +7,19 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import time 
 
 # --- CONFIGURATION ---
-# CRITICAL FIX: Changed from 127.0.0.1 (localhost) to 'app' (the service name in GitHub Actions)
-YOUFACE_LOGIN_URL = "http://127.0.0.1:5005/"
+# IMPORTANT: Use 127.0.0.1 since the app runs in the same container/job.
+YOUFACE_LOGIN_URL = "http://127.0.0.1:5005/" 
 VALID_USERNAME = "Kpond2" 
 VALID_PASSWORD = "Dodgers1"
 INVALID_USERNAME = "invaliduser"
 INVALID_PASSWORD = "invalidpassword"
-TIMEOUT = 15
+# Increased timeout for reliable CI execution
+TIMEOUT = 15 
 YOUR_NAME = "Kai Pond" 
 # ---------------------
 
 class YoufaceLoginPageTests(unittest.TestCase):
     
-    # Class variables to track results for the final summary
     ran_tests = 0
     passed_tests = 0
 
@@ -27,20 +27,25 @@ class YoufaceLoginPageTests(unittest.TestCase):
     def setUpClass(cls):
         print(f"Beginning Tests - {YOUR_NAME}")
         
-        # --- CRITICAL FIX: Add Chrome Options for Headless/CI Environment ---
+        # --- CRITICAL FIXES FOR GITHUB ACTIONS ---
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless')          # Run Chrome without a visible GUI
-        options.add_argument('--no-sandbox')         # Required in containerized/CI environments
-        options.add_argument('--disable-dev-shm-usage') # Prevents crashing in Linux CI environments
-        options.add_argument('--window-size=1920,1080') # Set a fixed window size
+        
+        # VITAL FIX: Tell Chromedriver where the Chromium binary is located
+        options.binary_location = '/usr/bin/chromium-browser' 
+        
+        # Required for Headless/CI Environment
+        options.add_argument('--headless')          
+        options.add_argument('--no-sandbox')         
+        options.add_argument('--disable-dev-shm-usage') 
+        options.add_argument('--window-size=1920,1080') 
         
         cls.driver = webdriver.Chrome(options=options) 
-        # --- END CRITICAL FIX ---
+        # --- END CRITICAL FIXES ---
         
         cls.driver.implicitly_wait(TIMEOUT) 
     
     def setUp(self):
-        # Reload the login page before every test, using the new 'http://app:5005/' URL
+        # Use the correct local URL
         self.driver.get(YOUFACE_LOGIN_URL)
         # Assert the correct page title
         self.assertIn("CampusTalk", self.driver.title)
@@ -61,10 +66,8 @@ class YoufaceLoginPageTests(unittest.TestCase):
         if not success:
             output += f" ({message})"
         
-        # Print the result immediately to stdout
         print(output)
         
-        # Update the class counters for the final summary
         YoufaceLoginPageTests.ran_tests += 1
         if success:
             YoufaceLoginPageTests.passed_tests += 1
@@ -158,6 +161,7 @@ class YoufaceLoginPageTests(unittest.TestCase):
 
     # --- TEST 07: Create User Link Navigates Correctly ---
     def test_07_create_user_link_navigation(self):
+        
         create_link = WebDriverWait(self.driver, TIMEOUT).until(
             EC.element_to_be_clickable(self.CREATE_LINK_LOCATOR)
         )
@@ -199,5 +203,4 @@ class YoufaceLoginPageTests(unittest.TestCase):
 
 
 if __name__ == '__main__': 
-    # Use verbosity=0 to minimize the default unittest output
     unittest.main(exit=False, verbosity=0)
