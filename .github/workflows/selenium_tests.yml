@@ -37,7 +37,7 @@ jobs:
         sleep 5 # Wait for the server to spin up
         
         # Health check now uses 127.0.0.1 (since it's running in the same container)
-        curl --fail http://127.0.0.1:5005 || (echo "App not running on 5005" && exit 1)
+        curl --fail http://127.0.0.1:5005/ || (echo "App not running on 5005" && exit 1)
 
     - name: Run ALL Team Selenium Tests
       run: |
