@@ -49,5 +49,6 @@ jobs:
           echo "== Beginning Tests =="
           python bailey_tests.py
           python jamie_selenium.py
+          python Kai_unittests.py
           echo "== Ending Tests =="
 
